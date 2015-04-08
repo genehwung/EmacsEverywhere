@@ -275,14 +275,6 @@ $^y::SendCommand("^y","^v") ;paste
 ;==========================
 
 ;==========================
-;Send date and time
-;==========================
-$+!d::  ; This hotstring replaces "shift+alt+d" with the current date and time via the commands below.
-FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
-SendInput %CurrentDateTime%
-return
-
-;==========================
 ;Conflicting shortcuts
 ;==========================
 $^+p:: SendCommand("^+p", "^p") ; Print
@@ -292,3 +284,13 @@ $^+i:: SendCommand("^+i", "^i") ; Italicize
 $^+u:: SendCommand("^+u", "^u") ; Underline
 $^+w:: SendCommand("^+w", "^w") ; Close tab
 $^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
+
+;==========================
+;Extra keys
+;==========================
+$!a:: SendCommand("!a", "{AppsKey}") ; Right click
+
+$+!d::  ; ;Send date and time
+FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
+SendInput %CurrentDateTime%
+return
