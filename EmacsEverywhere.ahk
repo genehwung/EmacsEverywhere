@@ -139,7 +139,7 @@ CapsLock::
 return
 
 ;==============================
-;Things start with ^X and Space
+;Things starting with ^X or Space
 ;==============================
 $^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 
@@ -162,7 +162,7 @@ $^w:: ;Save as or cut (because ^f is forward now)
 	setPrefix_space("!space", false)  ; Disable the marker
 	return
 
-$^space::
+$^space:: ;Marker begins
 	global is_pre_spc
 	if !is_pre_spc ; Just enable marker when it is not enabled
 		setPrefix_space("^space", true) 
@@ -172,10 +172,10 @@ $^space::
 	}
 	return
 
-$^g::
+$^g:: ;Reset the marker
 	setPrefix_x("^g", false) ; Disable the Ctrl_x 
 	setPrefix_space("", false)	; Disable the marker	
-	SendCommand("", "{Up}{Down}") ; Clear the selection
+	SendCommand("", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
 	return
 	
 ;==========================
@@ -215,6 +215,7 @@ $^e::SendCommand_spc("^e","{End}")
 ;==========================
 
 $^v::SendCommand_spc("^v","{PgDn}")
+
 $!v::SendCommand_spc("!v","{PgUp}")
 
 $!<::SendCommand_spc("!<","^{Home}")
@@ -225,30 +226,31 @@ $!>::SendCommand_spc("!>","^{End}")
 ;Undo and Redo
 ;==========================
 
-$^_::SendCommand("^_","^z")
-$^+::SendCommand("^_","^y")
+$^_::SendCommand("^_","^z") ;Undo
+
+$^+::SendCommand("^_","^y") ;Redo, this is a silly helper as Emacs behaves very different for Redo
 
 ;==========================
 ;Copy, cut, paste, delete
 ;==========================
 
-$^d::SendCommand("^d","{Delete}")
+$^d::SendCommand("^d","{Delete}") ;Delete
 
-$!d::SendCommand("!d","^+{Right}","{Delete}")
+$!d::SendCommand("!d","^+{Right}","{Delete}") ;Delete a word
 
-$!Delete::SendCommand("!{Del}","^+{Left}","{Del}")
+$!Delete::SendCommand("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
-$^k::
+$^k:: ;Take the whole line and cut it
 	SendCommand("^k","+{End}","^c") ; Copy the line	
 	SendCommand("","+{End}","{Delete}") ; Cut the line
 	return
 	
-;OnClipboardChange:
+;OnClipboardChange: 
 	;send, "%A_EventInfo%" ;ToolTip Clipboard data type: %A_EventInfo%"1"
 
-$!w::
-	SendCommand("!w","^c") ;copy region
-	setPrefix_space("!space", !is_pre_spc) 
+$!w:: ;copy region, and reset the marker
+	SendCommand("!w","^c") 
+	setPrefix_space("!space", false) 
 	return
 
 $^y::SendCommand("^y","^v") ;paste
@@ -256,13 +258,11 @@ $^y::SendCommand("^y","^v") ;paste
 ;==========================
 ;Hot string
 ;==========================
-::JH::Jin
-::RGO::Dr. Gutierrez
 
 ;==========================
 ;Send date and time
 ;==========================
-$+!d::  ; This hotstring replaces "]d" with the current date and time via the commands below.
+$+!d::  ; This hotstring replaces "shift+alt+d" with the current date and time via the commands below.
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
 SendInput %CurrentDateTime%
 return
