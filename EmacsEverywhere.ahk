@@ -28,8 +28,7 @@ key_lst := ""
 ;==========================
 ;Functions
 ;==========================
-is_target()
-{
+is_target() {
   IfWinActive,ahk_class ConsoleWindowClass ; Cygwin
     Return 1 
   IfWinActive,ahk_class MEADOW ; Meadow
@@ -52,10 +51,12 @@ is_target()
   IfWinActive,ahk_class ENMainFrame ; Evernote
     Return 3
   IfWinActive,ahk_class SunAwtFrame ; MATLAB
-    Return 4	
-  Return 0
-;  IfWinActive,ahk_class SWT_Window0 ; Eclipse
-;    Return 1
+	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1    
+  IfWinActive,ahk_class SWT_Window0 ; Eclipse
+    Return 5
+  else
+	Return 0
+	
 ;   IfWinActive,ahk_class Xming X
 ;     Return 1
 ;   IfWinActive,ahk_class SunAwtFrame
@@ -145,10 +146,12 @@ $^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 $h::SendCommand_PreX("h", "^a", "h") ;Select all
 	
 $^s:: ; Save or search
-	if (is_target() == 4) ; Matlab incremental search
+	if (is_target() == 4)        ; Matlab incremental search
 		SendCommand_PreX("^s", "^s", "^s") ;Save or searching (because ^f is forward now)
-	else if (is_target() == 3) ;Evernote
-		SendCommand_PreX("^s", "{F9}", "^f")
+	else if (is_target() == 3)    ;Evernote
+		SendCommand_PreX("^s", "{F9}", "^f") 
+	else if (is_target() == 5)          ; Eclipse incremental search
+		SendCommand_PreX("^s", "^s", "^j") ;Save or searching (because ^f is forward now)
 	else
 		SendCommand_PreX("^s", "^s", "^f") ;Save or searching (because ^f is forward now)
 	return
@@ -176,6 +179,15 @@ $^g:: ;Reset the marker
 	setPrefix_space("", false)	; Disable the marker	
 	SendCommand("", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
 	return
+
+;==========================
+;Search "incremental in c_x"
+;==========================
+$^r:: 
+	if (is_target() == 5) ; Eclipse reverse search reverse
+		SendCommand("^r", "^+j")
+	else
+		SendCommand("^r", "^r")
 	
 ;==========================
 ;Character navigation
