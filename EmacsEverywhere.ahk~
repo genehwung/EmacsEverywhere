@@ -28,14 +28,9 @@ key_lst := ""
 ;==========================
 ;Functions
 ;==========================
-; Check application, 0 means disable the key binding all together
 is_target() {
-  IfWinActive,ahk_class Emacs ; NTEmacs 
-    Return 0
-  IfWinActive,ahk_class mintty ; Cygwin
-    Return 0
   IfWinActive,ahk_class ConsoleWindowClass ; Cygwin
-    Return 0
+    Return 1 
   IfWinActive,ahk_class MEADOW ; Meadow
     Return 1 
   IfWinActive,ahk_class cygwin/x X rl-xterm-XTerm-0
@@ -47,6 +42,8 @@ is_target() {
     Return 1
   IfWinActive,ahk_class Vim ; GVIM
     Return 1
+   IfWinActive,ahk_class Emacs ; NTEmacs
+     Return 1  
    IfWinActive,ahk_class XEmacs ; XEmacs on Cygwin
      Return 1
   IfWinActive,ahk_class OpusApp ; Word
@@ -60,9 +57,11 @@ is_target() {
   IfWinActive,ahk_class Chrome_WidgetWin_1 ; Chrome
 	Return 6
   else
-	Return 1
+	Return 0
 	
 ;   IfWinActive,ahk_class Xming X
+;     Return 1
+;   IfWinActive,ahk_class SunAwtFrame
 ;     Return 1
 }
 
@@ -81,11 +80,6 @@ SetEmacsMode(toActive) {
 }
 
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
-  if (is_target() == 0) ; disable the shit
-	SetEmacsMode(false)
-   else	
-	SetEmacsMode(true)   
-	
   global IsInEmacsMode
   if (IsInEmacsMode) {
     Send, %translationToWindowsKeystrokes%
