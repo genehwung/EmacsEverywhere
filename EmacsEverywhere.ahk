@@ -56,7 +56,7 @@ is_target() {
   IfWinActive,ahk_class SunAwtFrame ; MATLAB
 	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1    
   IfWinActive,ahk_class SWT_Window0 ; Eclipse
-    Return 5
+    Return 0
   IfWinActive,ahk_class Chrome_WidgetWin_1 ; Chrome
 	Return 6
   else
@@ -156,7 +156,7 @@ $^s:: ; Save or search
 		SendCommand_PreX("^s", "^s", "^s") ;Save or searching (because ^f is forward now)
 	else if (is_target() == 3)    ;Evernote
 		SendCommand_PreX("^s", "{F9}", "^f") 
-	else if (is_target() == 5)          ; Eclipse incremental search
+	else if (is_target() == 5)          ; Eclipse incremental search Not working
 		SendCommand_PreX("^s", "^s", "^j") ;Save or searching (because ^f is forward now)
 	else if (is_target() == 6)    ;Chrome
 		SendCommand_PreX("^s", "^s", "^g") 
@@ -169,7 +169,7 @@ $^w:: ;Save as or cut (because ^f is forward now)
 		SendCommand_PreX("^w", "{F12}", "^x")
 	else
 		SendCommand_PreX("^w", "^!s", "^x") ;
-	setPrefix_space("!space", false)  ; Disable the marker
+	setPrefix_space("", false)  ; Disable the marker
 	return
 
 $^space:: ;Marker begins
@@ -178,7 +178,7 @@ $^space:: ;Marker begins
 		setPrefix_space("^space", true) 
 	else {
 		SendCommand("", "{Up}{Down}") ; Cancel the selection, and then go to the right 
-		setPrefix_space("^space", true) 
+		setPrefix_space("", true) 
 	}
 	return
 
@@ -272,7 +272,7 @@ $^k:: ;Take the whole line and cut it
 
 $!w:: ;copy region, and reset the marker
 	SendCommand("!w","^c") 
-	setPrefix_space("!space", false) 
+	setPrefix_space("", false) 
 	return
 
 $^y::SendCommand("^y","^v") ;paste
@@ -291,6 +291,7 @@ $^+i:: SendCommand("^+i", "^i") ; Italicize
 $^+u:: SendCommand("^+u", "^u") ; Underline
 $^+w:: SendCommand("^+w", "^w") ; Close tab
 $^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
+$^+d:: SendCommand("^+d", "^d") ; just control + d
 
 ;==========================
 ;Extra keys
