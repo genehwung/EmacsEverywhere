@@ -54,6 +54,8 @@ is_target() {
 	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1    
   IfWinActive,ahk_class SWT_Window0 ; Eclipse
     Return 5
+  IfWinActive,ahk_class Chrome_WidgetWin_1 ; Chrome
+	Return 6
   else
 	Return 0
 	
@@ -79,10 +81,6 @@ SetEmacsMode(toActive) {
 
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
   global IsInEmacsMode
-  ;if is_target() 
-	;SetEmacsMode(false)
-  ;else
-	;SetEmacsMode(true)  
   if (IsInEmacsMode) {
     Send, %translationToWindowsKeystrokes%
     if (secondWindowsKeystroke<>"") {
@@ -134,7 +132,7 @@ setPrefix_space(emacsKey,toActive) {
 ;==========================
 ;Emacs mode toggle
 ;==========================
-CapsLock::
+!`::
   SetEmacsMode(!IsInEmacsMode)
 return
 
@@ -147,7 +145,6 @@ $h::SendCommand_PreX("h", "^a", "h") ;Select all
 
 $^f::SendCommand_PreX("^f", "^o", "{Right}")  ; Open a file or move right
 	
-	
 $^s:: ; Save or search
 	if (is_target() == 4)        ; Matlab incremental search
 		SendCommand_PreX("^s", "^s", "^s") ;Save or searching (because ^f is forward now)
@@ -155,6 +152,8 @@ $^s:: ; Save or search
 		SendCommand_PreX("^s", "{F9}", "^f") 
 	else if (is_target() == 5)          ; Eclipse incremental search
 		SendCommand_PreX("^s", "^s", "^j") ;Save or searching (because ^f is forward now)
+	else if (is_target() == 6)    ;Chrome
+		SendCommand_PreX("^s", "^s", "^g") 
 	else
 		SendCommand_PreX("^s", "^s", "^f") ;Save or searching (because ^f is forward now)
 	return
@@ -189,6 +188,8 @@ $^g:: ;Reset the marker
 $^r:: 
 	if (is_target() == 5) ; Eclipse reverse search reverse
 		SendCommand("^r", "^+j")
+	else if (is_target() == 6)    ;Chrome reverse search
+		SendCommand_PreX("^s", "^s", "^+g") 
 	else
 		SendCommand("^r", "^r")
 	
@@ -280,3 +281,13 @@ $+!d::  ; This hotstring replaces "shift+alt+d" with the current date and time v
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
 SendInput %CurrentDateTime%
 return
+
+;==========================
+;Conflicting shortcuts
+;==========================
+$^+p:: SendCommand("^+p", "^p") ; Print
+$^+k:: SendCommand("^+k", "^k") ; Insert a link
+$^+b:: SendCommand("^+b", "^b") ; Bold face
+$^+i:: SendCommand("^+i", "^i") ; Italicize
+$^+u:: SendCommand("^+u", "^u") ; Underline
+$^+w:: SendCommand("^+w", "^w") ; Close tab
