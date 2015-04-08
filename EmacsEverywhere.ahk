@@ -1,444 +1,269 @@
-﻿;use this for debug
-;ListVars
-;Pause
+;
+; AutoHotkey Version: 1.x
+; Language:       English
+; Platform:       Win9x/NT
+; Author:         David <tchepak@gmail.com>
+;
+; Script Function:
+;   Provides an Emacs-like keybinding emulation mode that can be toggled on and off using
+;   the CapsLock key.
+;
 
 ;==========================
-;Initialization
+;Initialise
 ;==========================
+
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-#InstallKeybdHook
-#UseHook
+enabledIcon := "emacs_everywhere_16.ico"
+disabledIcon := "emacs_everywhere_disabled_16.ico"
+IsInEmacsMode := false
+SetEmacsMode(true)
 
-enabledIcon := "EmacsEverywhere_on.ico"
-disabledIcon := "EmacsEverywhere_off.ico"
-; C-x status
-is_pre_x = 0
-; C-Space status
-is_pre_spc = 0
-EmacsModeStat := false
-SetEmacsMode(false)
+is_pre_x := false ; turns to be true when ctrl-x is pressed
+is_pre_spc := false ; turns to be true when ctrl-space is pressed
 
+key_lst := ""
 
+;==========================
+;Functions
+;==========================
+is_target()
+{
+  IfWinActive,ahk_class ConsoleWindowClass ; Cygwin
+    Return 1 
+  IfWinActive,ahk_class MEADOW ; Meadow
+    Return 1 
+  IfWinActive,ahk_class cygwin/x X rl-xterm-XTerm-0
+    Return 1
+  IfWinActive,ahk_class MozillaUIWindowClass ; keysnail on Firefox
+    Return 1
+  ; Avoid VMwareUnity with AutoHotkey
+  IfWinActive,ahk_class VMwareUnityHostWndClass
+    Return 1
+  IfWinActive,ahk_class Vim ; GVIM
+    Return 1
+   IfWinActive,ahk_class Emacs ; NTEmacs
+     Return 1  
+   IfWinActive,ahk_class XEmacs ; XEmacs on Cygwin
+     Return 1
+  IfWinActive,ahk_class OpusApp ; Word
+    Return 2
+  IfWinActive,ahk_class ENMainFrame ; Evernote
+    Return 3
+  IfWinActive,ahk_class SunAwtFrame ; MATLAB
+    Return 4	
+  Return 0
+;  IfWinActive,ahk_class SWT_Window0 ; Eclipse
+;    Return 1
+;   IfWinActive,ahk_class Xming X
+;     Return 1
+;   IfWinActive,ahk_class SunAwtFrame
+;     Return 1
+}
+
+SetEmacsMode(toActive) {
+  local iconFile := toActive ? enabledIcon : disabledIcon
+  local state := toActive ? "ON" : "OFF"
+
+  if (IsInEmacsMode != toActive) {
+	  IsInEmacsMode := toActive
+	  ; TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
+	  Menu, Tray, Icon, %iconFile%,
+	  ; Menu, Tray, Tip, Emacs Everywhere`nEmacs mode is %state%  
+
+	  Send {Shift Up}
+  }
+}
+
+SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
+  global IsInEmacsMode
+  ;if is_target() 
+	;SetEmacsMode(false)
+  ;else
+	;SetEmacsMode(true)  
+  if (IsInEmacsMode) {
+    Send, %translationToWindowsKeystrokes%
+    if (secondWindowsKeystroke<>"") {
+      Send, %secondWindowsKeystroke%
+    }
+	global key_lst = translationToWindowsKeystrokes . secondWindowsKeystroke			
+  } else {
+    Send, %emacsKey% ;passthrough original keystroke
+  }
+  return
+}
+
+SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
+	global is_pre_spc
+  
+	if (is_pre_spc) {
+		SendCommand(emacsKey, "+" . translationToWindowsKeystrokes) ; Concatenate string
+	}
+	else {
+		SendCommand(emacsKey, translationToWindowsKeystrokes)
+	}	
+	return
+}
+
+SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes) {
+	global is_pre_x	  
+	if (is_pre_x) {
+		SendCommand(emacsKey, translationToWindowsKeystrokes)
+		setPrefix_x(emacsKey,false)
+	}
+	else {
+		SendCommand(emacsKey, alternativeKeystrokes)
+	}	
+	return
+}
+
+setPrefix_x(emacsKey,toActive) {
+	global is_pre_x := toActive
+	SendCommand(emacsKey,"")
+	return
+}
+  
+setPrefix_space(emacsKey,toActive) {
+	global is_pre_spc := toActive
+	SendCommand(emacsKey,"")
+	return
+}
+  
 ;==========================
 ;Emacs mode toggle
 ;==========================
-+CapsLock::
-	SetEmacsMode(!EmacsModeStat)
+CapsLock::
+  SetEmacsMode(!IsInEmacsMode)
 return
 
-SetEmacsMode(toActive) {
-	local iconFile := toActive ? enabledIcon : disabledIcon
-	local state := toActive ? "ON" : "OFF"
-	
-	EmacsModeStat := toActive
-	TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
-	Menu, Tray, Icon, %iconFile%,
-	Menu, Tray, Tip, Emacs Everywhere`nEmacs mode is %state%  
-	
-	Send {Shift Up}
-}
+;==============================
+;Things start with ^X and Space
+;==============================
+$^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 
-is_target() {
-	if WinActive("ahk_class Notepad++") {
-		return true
-	} else {
-		return false
-	}
-}
+$h::SendCommand_PreX("h", "^a", "h") ;Select all
+	
+$^s:: ; Save or search
+	if (is_target() == 4) ; Matlab incremental search
+		SendCommand_PreX("^s", "^s", "^s") ;Save or searching (because ^f is forward now)
+	else if (is_target() == 3) ;Evernote
+		SendCommand_PreX("^s", "{F9}", "^f")
+	else
+		SendCommand_PreX("^s", "^s", "^f") ;Save or searching (because ^f is forward now)
+	return
+	
+$^w:: ;Save as or cut (because ^f is forward now)
+	if (is_target() == 2) ;Word
+		SendCommand_PreX("^w", "{F12}", "^x")
+	else
+		SendCommand_PreX("^w", "^!s", "^x") ;
+	setPrefix_space("!space", false)  ; Disable the marker
+	return
 
-IsInEmacsMode() {
-	global EmacsModeStat
-	if (EmacsModeStat && is_target()) {
-		return true
-	} else {
-		return false
+$^space::
+	global is_pre_spc
+	if !is_pre_spc ; Just enable marker when it is not enabled
+		setPrefix_space("^space", true) 
+	else {
+		SendCommand("", "{Up}{Down}") ; Cancel the selection, and then go to the right 
+		setPrefix_space("^space", true) 
 	}
-}
+	return
+
+$^g::
+	setPrefix_x("^g", false) ; Disable the Ctrl_x 
+	setPrefix_space("", false)	; Disable the marker	
+	SendCommand("", "{Up}{Down}") ; Clear the selection
+	return
+	
+;==========================
+;Character navigation
+;==========================
+
+$^p::SendCommand_spc("^p","{Up}")
+
+$^n::SendCommand_spc("^n","{Down}")
+
+$^f::SendCommand_spc("^f","{Right}")
+
+$^b::SendCommand_spc("^b","{Left}")
 
 ;==========================
-;Action Functions
+;Word Navigation
 ;==========================
-delete_char() {
-	Send {Del}
-	global is_pre_spc = 0
-	Return
-}
 
-delete_backward_char() {
-	Send {BS}
-	global is_pre_spc = 0
-	Return
-}
+$!p::SendCommand_spc("!p","^{Up}")
 
-kill_line() {
-	Send {ShiftDown}{END}{SHIFTUP}
-	Sleep 10 ;[ms]
-	Send ^x
-	;if (RegExMatch(clipboard, "aa") > 0)
-	;{
-	;	Send ^o
-	;}
+$!n::SendCommand_spc("!n","^{Down}")
+
+$!f::SendCommand_spc("!f","^{Right}")
+
+$!b::SendCommand_spc("!b","^{Left}")
+
+;==========================
+;Line Navigation
+;==========================
+
+$^a::SendCommand_spc("^a","{Home}")
+
+$^e::SendCommand_spc("^e","{End}")
+
+;==========================
+;Page Navigation
+;==========================
+
+$^v::SendCommand_spc("^v","{PgDn}")
+$!v::SendCommand_spc("!v","{PgUp}")
+
+$!<::SendCommand_spc("!<","^{Home}")
+
+$!>::SendCommand_spc("!>","^{End}")
+
+;==========================
+;Undo and Redo
+;==========================
+
+$^_::SendCommand("^_","^z")
+$^+::SendCommand("^_","^y")
+
+;==========================
+;Copy, cut, paste, delete
+;==========================
+
+$^d::SendCommand("^d","{Delete}")
+
+$!d::SendCommand("!d","^+{Right}","{Delete}")
+
+$!Delete::SendCommand("!{Del}","^+{Left}","{Del}")
+
+$^k::
+	SendCommand("^k","+{End}","^c") ; Copy the line	
+	SendCommand("","+{End}","{Delete}") ; Cut the line
+	return
 	
-	
-	global is_pre_spc = 0
-	Return
-}
+;OnClipboardChange:
+	;send, "%A_EventInfo%" ;ToolTip Clipboard data type: %A_EventInfo%"1"
 
-open_line() {
-	Send {END}{Enter}{Up}
-	global is_pre_spc = 0
-	Return
-}
+$!w::
+	SendCommand("!w","^c") ;copy region
+	setPrefix_space("!space", !is_pre_spc) 
+	return
 
-quit() {
-	Send {ESC}
-	global is_pre_spc = 0
-	Return
-}
-
-newline() {
-	Send {Enter}
-	global is_pre_spc = 0
-	Return
-}
-
-indent_for_tab_command() {
-	Send {Tab}
-	global is_pre_spc = 0
-	Return
-}
-
-newline_and_indent() {
-	Send {Enter}{Tab}
-	global is_pre_spc = 0
-	Return
-}
-
-isearch_forward() {
-	Send ^f
-	global is_pre_spc = 0
-	Return
-}
-
-isearch_backward() {
-	Send ^f
-	global is_pre_spc = 0
-	Return
-}
-
-kill_region() {
-	Send ^x
-	global is_pre_spc = 0
-	Return
-}
-
-kill_ring_save() {
-	Send ^c
-	global is_pre_spc = 0
-	Return
-}
-
-yank() {
-	Send ^v
-	global is_pre_spc = 0
-	Return
-}
-
-undo() {
-	Send ^z
-	global is_pre_spc = 0
-	Return
-}
-
-find_file() {
-	Send ^o
-	global is_pre_x = 0
-	Return
-}
-
-save_buffer() {
-	Send, ^s
-	global is_pre_x = 0
-	Return
-}
-
-kill_emacs() {
-	Send !{F4}
-	global is_pre_x = 0
-	Return
-}
-
-move_beginning_of_line() {
-	global
-	if is_pre_spc
-		Send +{HOME}
-	Else
-		Send {HOME}
-	Return
-}
-
-move_end_of_line() {
-	global
-	if is_pre_spc
-		Send +{END}
-	Else
-		Send {END}
-	Return
-}
-
-previous_line() {
-	global
-	if is_pre_spc
-		Send +{Up}
-	Else
-		Send {Up}
-	Return
-}
-
-next_line() {
-	global
-	if is_pre_spc
-		Send +{Down}
-	Else
-		Send {Down}
-	Return
-}
-
-backward_char() {
-	global
-	if is_pre_spc
-		Send +{Left} 
-	Else
-		Send {Left}
-	Return
-}
-
-scroll_up() {
-	global
-	if is_pre_spc
-		Send +{PgUp}
-	Else
-		Send {PgUp}
-	Return
-}
-
-scroll_down() {
-        global
-	if is_pre_spc
-		Send +{PgDn}
-	Else
-		Send {PgDn}
-	Return
-}
-
-fallbackToDefault() {
-  Send %A_ThisHotkey%
-}
+$^y::SendCommand("^y","^v") ;paste
 
 ;==========================
-;Keybindings
+;Hot string
 ;==========================
-^x::
-  If IsInEmacsMode()
-    is_pre_x = 1
-  Else
-    fallbackToDefault()
-  Return
+::JH::Jin
+::RGO::Dr. Gutierrez
 
-h::
-  If (IsInEmacsMode() && is_pre_x) {
-    send ^a
-    is_pre_x = 0
-  }
-  Else
-    fallbackToDefault()
-  Return
-
-^f::
-  If IsInEmacsMode() {
-    If is_pre_x {
-      Send ^o
-      is_pre_x = 0
-    } Else {
-      if is_pre_spc
-        Send +{Right}
-      Else
-        Send {Right}
-    }
-  } Else
-    Send %A_ThisHotkey%
-  Return
-
-^c::
-	If IsInEmacsMode()
-	{
-		If is_pre_x
-		kill_emacs()
-	}
-	Else
-		Send %A_ThisHotkey%
-	Return  
-^d::
-	If IsInEmacsMode()
-		delete_char()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^h::
-	If IsInEmacsMode()
-		delete_backward_char()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^k::
-	If IsInEmacsMode()
-		kill_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^o::
-	If IsInEmacsMode()
-		open_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^g::
-	If IsInEmacsMode()
-		quit()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^j::
-	If IsInEmacsMode()
-		newline_and_indent()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^m::
-	If IsInEmacsMode()
-		newline()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^i::
-	If IsInEmacsMode()
-		indent_for_tab_command()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^s::
-	If IsInEmacsMode()
-	{
-		If is_pre_x
-			save_buffer()
-		Else
-			isearch_forward()
-	}
-	Else
-		Send %A_ThisHotkey%
-	Return
-^r::
-	If IsInEmacsMode()
-		isearch_backward()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^w::
-	If IsInEmacsMode()
-		kill_region()
-	Else
-		Send %A_ThisHotkey%
-	Return
-!w::
-	If IsInEmacsMode()
-		kill_ring_save()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^y::
-	If IsInEmacsMode()
-		yank()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^/::
-	If IsInEmacsMode()
-		undo()
-	Else
-		Send %A_ThisHotkey%
-	Return
- 
-;$^{Space}::
-^vk20sc039::
-	If IsInEmacsMode()
-	{
-		If is_pre_spc
-			is_pre_spc = 0
-		Else
-			is_pre_spc = 1
-	}
-	Else
-		Send {CtrlDown}{Space}{CtrlUp}
-	Return
-^@::
-	If IsInEmacsMode()
-	{
-		If is_pre_spc
-			is_pre_spc = 0
-		Else
-			is_pre_spc = 1
-	}
-	Else
-		Send %A_ThisHotkey%
-	Return
-^a::
-	If IsInEmacsMode()
-		move_beginning_of_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^e::
-	If IsInEmacsMode()
-		move_end_of_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^p::
-	If IsInEmacsMode()
-		previous_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^n::
-	If IsInEmacsMode()
-		next_line()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^b::
-	If IsInEmacsMode()
-		backward_char()
-	Else
-		Send %A_ThisHotkey%
-	Return
-^v::
-	If IsInEmacsMode()
-		scroll_down()
-	Else
-		Send %A_ThisHotkey%
-	Return
-!v::
-	If IsInEmacsMode()
-		scroll_up()
-	Else
-		Send %A_ThisHotkey%
-	Return
-
-#k::
-	MsgBox, 4,, スクリプトを終了しますか?,
-	IfMsgBox, Yes
-		ExitApp
-	Return
+;==========================
+;Send date and time
+;==========================
+$+!d::  ; This hotstring replaces "]d" with the current date and time via the commands below.
+FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
+SendInput %CurrentDateTime%
+return
