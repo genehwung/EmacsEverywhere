@@ -291,3 +291,4 @@ $^+b:: SendCommand("^+b", "^b") ; Bold face
 $^+i:: SendCommand("^+i", "^i") ; Italicize
 $^+u:: SendCommand("^+u", "^u") ; Underline
 $^+w:: SendCommand("^+w", "^w") ; Close tab
+$^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
