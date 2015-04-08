@@ -144,6 +144,9 @@ return
 $^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 
 $h::SendCommand_PreX("h", "^a", "h") ;Select all
+
+$^f::SendCommand_PreX("^f", "^o", "{Right}")  ; Open a file or move right
+	
 	
 $^s:: ; Save or search
 	if (is_target() == 4)        ; Matlab incremental search
@@ -197,7 +200,7 @@ $^p::SendCommand_spc("^p","{Up}")
 
 $^n::SendCommand_spc("^n","{Down}")
 
-$^f::SendCommand_spc("^f","{Right}")
+;$^f::SendCommand_spc("^f","{Right}")
 
 $^b::SendCommand_spc("^b","{Left}")
 
