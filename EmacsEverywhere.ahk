@@ -6,7 +6,6 @@
 ; Script Function:
 ;   Provides an Emacs-like keybinding emulation mode that can be toggled on and off using
 ;   the CapsLock key.
-;
 
 ;==========================
 ;Initialise
@@ -16,8 +15,8 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-enabledIcon := "emacs_everywhere_16.ico"
-disabledIcon := "emacs_everywhere_disabled_16.ico"
+enabledIcon := "EmacsEverywhere_on.ico"
+disabledIcon := "EmacsEverywhere_off.ico"
 IsInEmacsMode := false
 SetEmacsMode(true)
 
