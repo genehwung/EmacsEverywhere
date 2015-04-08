@@ -1,8 +1,7 @@
-;
 ; AutoHotkey Version: 1.x
 ; Language:       English
 ; Platform:       Win9x/NT
-; Author:         David <tchepak@gmail.com>
+; Author:         Gene <gene.hwung@gmail.com>
 ;
 ; Script Function:
 ;   Provides an Emacs-like keybinding emulation mode that can be toggled on and off using
