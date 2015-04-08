@@ -195,9 +195,10 @@ $^r::
 	if (is_target() == 5) ; Eclipse reverse search reverse
 		SendCommand("^r", "^+j")
 	else if (is_target() == 6)    ;Chrome reverse search
-		SendCommand_PreX("^s", "^s", "^+g") 
+		SendCommand("^r", "^+g") 	
 	else
 		SendCommand("^r", "^r")
+	return
 	
 ;==========================
 ;Character navigation
