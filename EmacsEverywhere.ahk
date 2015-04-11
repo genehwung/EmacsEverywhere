@@ -53,8 +53,8 @@ is_target() {
     Return 2
   IfWinActive,ahk_class ENMainFrame ; Evernote
     Return 3
-  IfWinActive,ahk_class SunAwtFrame ; MATLAB
-	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1    
+  IfWinActive,ahk_class SunAwtFrame ; MATLAB	
+	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
   IfWinActive,ahk_class SWT_Window0 ; Eclipse
     Return 0
   IfWinActive,ahk_class Chrome_WidgetWin_1 ; Chrome
@@ -86,11 +86,14 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
    else	
 	SetEmacsMode(true)   
 	
+  ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
   global IsInEmacsMode
   if (IsInEmacsMode) {
     Send, %translationToWindowsKeystrokes%
+	sleep, 40
     if (secondWindowsKeystroke<>"") {
       Send, %secondWindowsKeystroke%
+	  sleep, 40
     }
 	global key_lst = translationToWindowsKeystrokes . secondWindowsKeystroke			
   } else {
@@ -262,8 +265,8 @@ $!d::SendCommand("!d","^+{Right}","{Delete}") ;Delete a word
 
 $!Delete::SendCommand("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
-$^k:: ;Take the whole line and cut it
-	SendCommand("^k","+{End}","^c") ; Copy the line	
+^k:: ;Take the whole line and cut it
+	SendCommand("^k","+{End}","^c") ; Copy the line
 	SendCommand("","+{End}","{Delete}") ; Cut the line
 	return
 	
@@ -285,13 +288,14 @@ $^y::SendCommand("^y","^v") ;paste
 ;Conflicting shortcuts
 ;==========================
 $^+p:: SendCommand("^+p", "^p") ; Print
-$^+k:: SendCommand("^+k", "^k") ; Insert a link
+^+k:: SendCommand("^+k", "^k") ; Insert a link
 $^+b:: SendCommand("^+b", "^b") ; Bold face
 $^+i:: SendCommand("^+i", "^i") ; Italicize
 $^+u:: SendCommand("^+u", "^u") ; Underline
 $^+w:: SendCommand("^+w", "^w") ; Close tab
 $^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
 $^+d:: SendCommand("^+d", "^d") ; just control + d
+$^+r:: SendCommand("^+r", "^r") ; just control + r
 
 ;==========================
 ;Extra keys
