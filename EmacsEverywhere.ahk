@@ -56,7 +56,7 @@ is_target() {
   IfWinActive,ahk_class SunAwtFrame ; MATLAB	
 	Return 4	 ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
   IfWinActive,ahk_class SWT_Window0 ; Eclipse
-    Return 0
+    Return 5
   IfWinActive,ahk_class Chrome_WidgetWin_1 ; Chrome
 	Return 6
   else
