@@ -266,8 +266,14 @@ $!d::SendCommand("!d","^+{Right}","{Delete}") ;Delete a word
 $!Delete::SendCommand("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
 ^k:: ;Take the whole line and cut it
-	SendCommand("^k","+{End}","^c") ; Copy the line
-	SendCommand("","+{End}","{Delete}") ; Cut the line
+	if (is_target() == 2) {    ;Word
+		SendCommand("^k","+{End}+{Left}","^c") ; Copy the line minus one 
+		SendCommand("","+{End}+{Left}","{Delete}") ; Cut the line minus one
+	}
+	else {
+		SendCommand("^k","+{End}","^c") ; Copy the line
+		SendCommand("","+{End}","{Delete}") ; Cut the line
+	}
 	return
 	
 ;OnClipboardChange: 
