@@ -296,6 +296,12 @@ $^+w:: SendCommand("^+w", "^w") ; Close tab
 $^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
 $^+d:: SendCommand("^+d", "^d") ; just control + d
 $^+r:: SendCommand("^+r", "^r") ; just control + r
+$^+e:: 
+	if (is_target() == 6)        ; Google Chrome
+		SendCommand("^+e", "^+e") ; Same ^+e
+	else 
+		SendCommand("^+e", "^e") ; just control + e
+	return
 
 ;==========================
 ;Extra keys
