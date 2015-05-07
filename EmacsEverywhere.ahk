@@ -88,6 +88,7 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
 	
   ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
   global IsInEmacsMode
+
   if (IsInEmacsMode) {
     Send, %translationToWindowsKeystrokes%
 	sleep, 40
@@ -95,7 +96,7 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
       Send, %secondWindowsKeystroke%
 	  sleep, 40
     }
-	global key_lst = translationToWindowsKeystrokes . secondWindowsKeystroke			
+	global key_lst = translationToWindowsKeystrokes . secondWindowsKeystroke 
   } else {
     Send, %emacsKey% ;passthrough original keystroke
   }
@@ -133,8 +134,10 @@ setPrefix_x(emacsKey,toActive) {
 }
   
 setPrefix_space(emacsKey,toActive) {
-	global is_pre_spc := toActive
+	local iconFile := toActive ? disabledIcon : enabledIcon
+	is_pre_spc := toActive
 	SendCommand(emacsKey,"")
+	Menu, Tray, Icon, %iconFile%,
 	return
 }
   
@@ -265,7 +268,7 @@ $!d::SendCommand("!d","^+{Right}","{Delete}") ;Delete a word
 
 $!Delete::SendCommand("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
-^k:: ;Take the whole line and cut it
+$^k:: ;Take the whole line and cut it
 	if (is_target() == 2) {    ;Word
 		SendCommand("^k","+{End}+{Left}","^c") ; Copy the line minus one 
 		SendCommand("","+{End}+{Left}","{Delete}") ; Cut the line minus one
@@ -294,7 +297,7 @@ $^y::SendCommand("^y","^v") ;paste
 ;Conflicting shortcuts
 ;==========================
 $^+p:: SendCommand("^+p", "^p") ; Print
-^+k:: SendCommand("^+k", "^k") ; Insert a link
+$^+k:: SendCommand("^+k", "^k") ; Insert a link
 $^+b:: SendCommand("^+b", "^b") ; Bold face
 $^+i:: SendCommand("^+i", "^i") ; Italicize
 $^+u:: SendCommand("^+u", "^u") ; Underline
