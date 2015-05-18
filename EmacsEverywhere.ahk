@@ -115,6 +115,20 @@ SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	return
 }
 
+
+GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
+;	global is_pre_spc
+	local result
+  
+	if (is_pre_spc) {
+		result = +%translationToWindowsKeystrokes% ; Concatenate string
+	}
+	else {
+		result = %translationToWindowsKeystrokes%
+	}	
+	return result
+}
+
 SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes) {
 	global is_pre_x	  
 	if (is_pre_x) {
@@ -155,7 +169,7 @@ $^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 
 $h::SendCommand_PreX("h", "^a", "h") ;Select all
 
-$^f::SendCommand_PreX("^f", "^o", "{Right}")  ; Open a file or move right
+$^f::SendCommand_PreX("^f", "^o", GetCommand_spc("^f","{Right}"))  ; Open a file or move right
 	
 $^s:: ; Save or search
 	if (is_target() == 4)        ; Matlab incremental search
@@ -222,9 +236,9 @@ $^b::SendCommand_spc("^b","{Left}")
 ;Word Navigation
 ;==========================
 
-$!p::SendCommand_spc("!p","^{Up}")
+$!{::SendCommand_spc("!p","^{Up}")
 
-$!n::SendCommand_spc("!n","^{Down}")
+$!}::SendCommand_spc("!n","^{Down}")
 
 $!f::SendCommand_spc("!f","^{Right}")
 
@@ -305,6 +319,7 @@ $^+w:: SendCommand("^+w", "^w") ; Close tab
 $^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
 $^+d:: SendCommand("^+d", "^d") ; just control + d
 $^+r:: SendCommand("^+r", "^r") ; just control + r
+$^+f:: SendCommand("^+f", "^f") ; just control + f
 $^+e:: 
 	if (is_target() == 6)        ; Google Chrome
 		SendCommand("^+e", "^+e") ; Same ^+e
