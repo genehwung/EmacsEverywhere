@@ -99,8 +99,14 @@ SetEmacsMode(toActive) {
 
 ; Disable the non-emacs mode since I can just disable hotkey...
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
-	global timeStamp_GL := A_TickCount
-  ;if (is_target() == 0) ; disable the shit
+	global timeStamp_GL := A_TickCount ; record when the key is pressed
+	
+	; if prefix x, disable it once anything has been clicked
+	if (is_pre_x) {
+		setPrefix_x("", false)
+	}
+	
+  ;if (is_target() == 0) ; 
 	;SetEmacsMode(false)
    ;else	
 	;SetEmacsMode(true)   
@@ -156,7 +162,7 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 	
 	if (is_pre_x) {
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
-		setPrefix_x(emacsKey,false)
+		;setPrefix_x(emacsKey,false)
 	}
 	else {
 		SendCommand(emacsKey, alternativeKeystrokes)
@@ -166,19 +172,17 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 
 setPrefix_x(emacsKey,toActive) {
 	local iconFile := toActive ? disabledIcon : enabledIcon
-	 is_pre_x := toActive
-	SendCommand("","")
+	is_pre_x := toActive
 	Menu, Tray, Icon, %iconFile%,
-	 ;timeStamp_GL := A_TickCount
+	timeStamp_GL := A_TickCount
 	return
 }
   
 setPrefix_space(emacsKey,toActive) {
 	local iconFile := toActive ? disabledIcon : enabledIcon
 	is_pre_spc := toActive
-	SendCommand("","")
 	Menu, Tray, Icon, %iconFile%,
-	;timeStamp_GL := A_TickCount
+	timeStamp_GL := A_TickCount
 	return
 }
   
