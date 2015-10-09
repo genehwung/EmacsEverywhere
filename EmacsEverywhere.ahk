@@ -165,9 +165,10 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 }
 
 setPrefix_x(emacsKey,toActive) {
-	
+	local iconFile := toActive ? disabledIcon : enabledIcon
 	 is_pre_x := toActive
 	SendCommand("","")
+	Menu, Tray, Icon, %iconFile%,
 	 ;timeStamp_GL := A_TickCount
 	return
 }
