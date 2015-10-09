@@ -24,7 +24,6 @@ is_pre_x := false ; turns to be true when ctrl-x is pressed
 is_pre_spc := false ; turns to be true when ctrl-space is pressed
 
 key_lst := ""
-timeStamp_GL := 0 ; Used for calculate time between events
 
 ;==========================
 ;Functions
@@ -66,22 +65,6 @@ is_target() {
 ;   IfWinActive,ahk_class Xming X
 ;     Return 1
 }
-Loop{
-	sleep 1000
-	global is_pre_spc 
-	global is_pre_x
-	; reset the flag if too long
-	global timeStamp_GL	
-	if (is_pre_spc || is_pre_x) {
-		ts := A_TickCount
-		diffTs := ts - timeStamp_GL
-		; Msgbox, %ts% or %diffTs% or %timeStamp_GL% milliseconds!	
-		if (diffTs > 2000 ) { ; after 2 seconds, reset to normal 	
-			setPrefix_x("", false)
-			setPrefix_space("", false)
-		}
-	}	
-}
 
 SetEmacsMode(toActive) {
   local iconFile := toActive ? enabledIcon : disabledIcon
@@ -97,18 +80,16 @@ SetEmacsMode(toActive) {
   }
 }
 
-; Disable the non-emacs mode since I can just disable hotkey...
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
-	global timeStamp_GL := A_TickCount
-  ;if (is_target() == 0) ; disable the shit
-	;SetEmacsMode(false)
-   ;else	
-	;SetEmacsMode(true)   
+  if (is_target() == 0) ; disable the shit
+	SetEmacsMode(false)
+   else	
+	SetEmacsMode(true)   
 	
   ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
   global IsInEmacsMode
 
-  if (IsInEmacsMode && translationToWindowsKeystrokes <>"") {
+  if (IsInEmacsMode) {
     Send, %translationToWindowsKeystrokes%
 	sleep, 40
     if (secondWindowsKeystroke<>"") {
@@ -117,17 +98,15 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
     }
 	global key_lst = translationToWindowsKeystrokes . secondWindowsKeystroke 
   } else {
-    Send, %emacsKey% ;passthrough original keystroke 
+    Send, %emacsKey% ;passthrough original keystroke
   }
   return
 }
 
 SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	global is_pre_spc
-	
+  
 	if (is_pre_spc) {
-
-		
 		SendCommand(emacsKey, "+" . translationToWindowsKeystrokes) ; Concatenate string
 	}
 	else {
@@ -136,7 +115,7 @@ SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	return
 }
 
-; compute the command when space is on
+
 GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 ;	global is_pre_spc
 	local result
@@ -151,9 +130,7 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 }
 
 SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes) {
-	
 	global is_pre_x	  
-	
 	if (is_pre_x) {
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
 		setPrefix_x(emacsKey,false)
@@ -165,28 +142,25 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 }
 
 setPrefix_x(emacsKey,toActive) {
-	
-	 is_pre_x := toActive
-	SendCommand("","")
-	 ;timeStamp_GL := A_TickCount
+	global is_pre_x := toActive
+	SendCommand(emacsKey,"")
 	return
 }
   
 setPrefix_space(emacsKey,toActive) {
 	local iconFile := toActive ? disabledIcon : enabledIcon
 	is_pre_spc := toActive
-	SendCommand("","")
+	SendCommand(emacsKey,"")
 	Menu, Tray, Icon, %iconFile%,
-	;timeStamp_GL := A_TickCount
 	return
 }
   
 ;==========================
 ;Emacs mode toggle
 ;==========================
-;!`::
-  ;SetEmacsMode(!IsInEmacsMode)
-;return
+!`::
+  SetEmacsMode(!IsInEmacsMode)
+return
 
 ;==============================
 ;Things starting with ^X or Space
