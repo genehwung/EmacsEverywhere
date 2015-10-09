@@ -12,6 +12,8 @@
 ;==========================
 
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#InstallKeybdHook  ;Only use the keyboard response for A_TimeIdlePhysical
+
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
@@ -66,22 +68,38 @@ is_target() {
 ;   IfWinActive,ahk_class Xming X
 ;     Return 1
 }
-Loop{
-	sleep 1000
+
+global INTERVAL := 200
+
+loop{
 	global is_pre_spc 
 	global is_pre_x
+	
 	; reset the flag if too long
 	global timeStamp_GL	
+	global INTERVAL
+	
+	sleep INTERVAL
 	if (is_pre_spc || is_pre_x) {
 		ts := A_TickCount
 		diffTs := ts - timeStamp_GL
 		; Msgbox, %ts% or %diffTs% or %timeStamp_GL% milliseconds!	
-		if (diffTs > 2000 ) { ; after 2 seconds, reset to normal 	
+		if (diffTs > 3000 ) { ; after # seconds, reset to normal 	
 			setPrefix_x("", false)
-			setPrefix_space("", false)
+			setPrefix_space("", false) 
 		}
-	}	
-}
+		
+		; any key will cancel the ^x effect, this will however, turn it off when releasing control (shich seems too strict but fine for now)
+		if (is_pre_x) {		
+			; the last keystroke has to be something else (diffTs > INTERVAL)
+
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && A_Priorkey <> "x"){ 
+				;Msgbox, %A_Lastkey% . %A_Priorkey%
+				setPrefix_x("", false)
+			}
+		}
+	}
+}	
 
 SetEmacsMode(toActive) {
   local iconFile := toActive ? enabledIcon : disabledIcon
