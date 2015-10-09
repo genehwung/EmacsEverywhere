@@ -131,10 +131,6 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
 	
   ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
   global IsInEmacsMode
-
-  ; Attempt to fix the modifier stuck situation, check whether they are stuck, then 
-  ;While GetKeyState("Ctrl","P") || GetKeyState("LWin","P") || GetKeyState("RWin","P") || GetKeyState("Shift","P") || GetKeyState("Alt","P")
-	;Sleep 50
 	
   if (IsInEmacsMode && translationToWindowsKeystrokes <>"") {
     Send, %translationToWindowsKeystrokes%
@@ -147,6 +143,12 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
   } else {
     Send, %emacsKey% ;passthrough original keystroke 
   }
+  
+  ; Attempt to fix the modifier stuck situation, check whether they are stuck, then 
+  ;While GetKeyState("Ctrl","P") || GetKeyState("LWin","P") || GetKeyState("RWin","P") || GetKeyState("Shift","P") || GetKeyState("Alt","P"){	
+	;Sleep 50
+  ;}
+  
   return
 }
 
