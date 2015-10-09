@@ -71,7 +71,7 @@ is_target() {
 ;     Return 1
 }
 
-global INTERVAL := 200
+global INTERVAL := 100
 
 loop{
 	global is_pre_spc 
@@ -95,8 +95,8 @@ loop{
 		; any key will cancel the ^x , this will however, turn it off when releasing control (shich seems too strict but fine for now)
 		if (is_pre_x) {		
 			; the last keystroke has to be something else (diffTs > INTERVAL)
-			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && A_Priorkey <> "x"){ 
-				;Msgbox, %A_Lastkey% . %A_Priorkey%
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" || !GetKeyState("Ctrl","P")) ){ 
+				Msgbox, %A_Thishotkey% . %A_Priorkey% .GetKeyState("Ctrl","P")
 				setPrefix_x("", false)
 			}
 		}
@@ -105,7 +105,7 @@ loop{
 		if (is_pre_spc) {
 			; the last keystroke has to be something else (diffTs > INTERVAL)			
 			; other hotkeys are pressed, or just some random keys being pressed (Control is released)
-			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (key_grp <> 1 || ~GetKeyState("Ctrl","P")) ){ 
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (key_grp <> 1 || !GetKeyState("Ctrl","P")) ){ 
 				;Msgbox, %A_Thishotkey% . %A_Priorkey%
 				setPrefix_space("", false)
 			}
@@ -166,7 +166,9 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
 
 SendCommand_norm(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
 	SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke)
-	global key_grp := 0 
+	global key_grp := 0
+	setPrefix_space("", false)
+	setPrefix_x("", false)
 	return
 }
 
@@ -181,6 +183,7 @@ SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	else {
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
 	}	
+	setPrefix_x("", false)
 	return
 }
 
@@ -195,6 +198,7 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	else {
 		result = %translationToWindowsKeystrokes%
 	}	
+	
 	return result
 }
 
@@ -209,6 +213,7 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 	else {
 		SendCommand(emacsKey, alternativeKeystrokes)
 	}	
+	setPrefix_space("", false)
 	return
 }
 
