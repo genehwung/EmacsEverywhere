@@ -27,6 +27,7 @@ is_pre_x := false ; turns to be true when ctrl-x is pressed
 is_pre_spc := false ; turns to be true when ctrl-space is pressed
 
 key_lst := ""
+key_grp := 0 ; 0: normal 1: pre_space 2: pre_x
 timeStamp_GL := 0 ; Used for calculate time between events
 
 ;==========================
@@ -79,6 +80,7 @@ loop{
 	; reset the flag if too long
 	global timeStamp_GL	
 	global INTERVAL
+	global key_grp
 	
 	sleep INTERVAL
 	if (is_pre_spc || is_pre_x) {
@@ -90,17 +92,26 @@ loop{
 			setPrefix_space("", false) 
 		}
 		
-		; any key will cancel the ^x effect, this will however, turn it off when releasing control (shich seems too strict but fine for now)
+		; any key will cancel the ^x , this will however, turn it off when releasing control (shich seems too strict but fine for now)
 		if (is_pre_x) {		
 			; the last keystroke has to be something else (diffTs > INTERVAL)
-
 			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && A_Priorkey <> "x"){ 
 				;Msgbox, %A_Lastkey% . %A_Priorkey%
 				setPrefix_x("", false)
 			}
 		}
+		
+		; any key will cancel the ^space, this will however, turn it off when releasing control (shich seems too strict but fine for now)
+		if (is_pre_spc) {
+			; the last keystroke has to be something else (diffTs > INTERVAL)			
+			; other hotkeys are pressed, or just some random keys being pressed (Control is released)
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (key_grp <> 1 || ~GetKeyState("Ctrl","P")) ){ 
+				;Msgbox, %A_Thishotkey% . %A_Priorkey%
+				setPrefix_space("", false)
+			}
+		}		
 	}
-}	
+}
 
 SetEmacsMode(toActive) {
   local iconFile := toActive ? enabledIcon : disabledIcon
@@ -153,11 +164,17 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
   return
 }
 
+SendCommand_norm(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
+	SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke)
+	global key_grp := 0 
+	return
+}
+
 SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	global is_pre_spc
+	global key_grp := 1
 	
 	if (is_pre_spc) {
-
 		
 		SendCommand(emacsKey, "+" . translationToWindowsKeystrokes) ; Concatenate string
 	}
@@ -184,7 +201,7 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes) {
 	
 	global is_pre_x	  
-	
+	global key_grp := 2
 	if (is_pre_x) {
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
 		;setPrefix_x(emacsKey,false)
@@ -269,11 +286,11 @@ $^g:: ;Reset the marker
 ;==========================
 $^r:: 
 	if (is_target() == 5) ; Eclipse reverse search reverse
-		SendCommand("^r", "^+j")
+		SendCommand_norm("^r", "^+j")
 	else if (is_target() == 6)    ;Chrome reverse search
-		SendCommand("^r", "^+g") 	
+		SendCommand_norm("^r", "^+g") 	
 	else
-		SendCommand("^r", "^r")
+		SendCommand_norm("^r", "^r")
 	return
 	
 ;==========================
@@ -324,28 +341,28 @@ $!>::SendCommand_spc("!>","^{End}")
 ;Undo and Redo
 ;==========================
 
-$^_::SendCommand("^_","^z") ;Undo
+$^_::SendCommand_norm("^_","^z") ;Undo
 
-$^+::SendCommand("^_","^y") ;Redo, this is a silly helper as Emacs behaves very different for Redo
+$^+::SendCommand_norm("^_","^y") ;Redo, this is a silly helper as Emacs behaves very different for Redo
 
 ;==========================
 ;Copy, cut, paste, delete
 ;==========================
 
-$^d::SendCommand("^d","{Delete}") ;Delete
+$^d::SendCommand_norm("^d","{Delete}") ;Delete
 
-$!d::SendCommand("!d","^+{Right}","{Delete}") ;Delete a word
+$!d::SendCommand_norm("!d","^+{Right}","{Delete}") ;Delete a word
 
-$!Delete::SendCommand("!{Del}","^+{Left}","{Del}") ;Delete from the right side
+$!Delete::SendCommand_norm("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
 $^k:: ;Take the whole line and cut it
 	if (is_target() == 2) {    ;Word
-		SendCommand("^k","+{End}+{Left}","^c") ; Copy the line minus one 
-		SendCommand("","+{End}+{Left}","{Delete}") ; Cut the line minus one
+		SendCommand_norm("^k","+{End}+{Left}","^c") ; Copy the line minus one 
+		SendCommand_norm("","+{End}+{Left}","{Delete}") ; Cut the line minus one
 	}
 	else {
-		SendCommand("^k","+{End}","^c") ; Copy the line
-		SendCommand("","+{End}","{Delete}") ; Cut the line
+		SendCommand_norm("^k","+{End}","^c") ; Copy the line
+		SendCommand_norm("","+{End}","{Delete}") ; Cut the line
 	}
 	return
 	
@@ -353,11 +370,11 @@ $^k:: ;Take the whole line and cut it
 	;send, "%A_EventInfo%" ;ToolTip Clipboard data type: %A_EventInfo%"1"
 
 $!w:: ;copy region, and reset the marker
-	SendCommand("!w","^c") 
+	SendCommand_norm("!w","^c") 
 	setPrefix_space("", false) 
 	return
 
-$^y::SendCommand("^y","^v") ;paste
+$^y::SendCommand_norm("^y","^v") ;paste
 
 ;==========================
 ;Hot string
@@ -366,27 +383,27 @@ $^y::SendCommand("^y","^v") ;paste
 ;==========================
 ;Conflicting shortcuts
 ;==========================
-$^+p:: SendCommand("^+p", "^p") ; Print
-$^+k:: SendCommand("^+k", "^k") ; Insert a link
-$^+b:: SendCommand("^+b", "^b") ; Bold face
-$^+i:: SendCommand("^+i", "^i") ; Italicize
-$^+u:: SendCommand("^+u", "^u") ; Underline
-$^+w:: SendCommand("^+w", "^w") ; Close tab
-$^+n:: SendCommand("^+n", "^n") ; Open a new tab/file
-$^+d:: SendCommand("^+d", "^d") ; just control + d
-$^+r:: SendCommand("^+r", "^r") ; just control + r
-$^+f:: SendCommand("^+f", "^f") ; just control + f
+$^+p:: SendCommand_norm("^+p", "^p") ; Print
+$^+k:: SendCommand_norm("^+k", "^k") ; Insert a link
+$^+b:: SendCommand_norm("^+b", "^b") ; Bold face
+$^+i:: SendCommand_norm("^+i", "^i") ; Italicize
+$^+u:: SendCommand_norm("^+u", "^u") ; Underline
+$^+w:: SendCommand_norm("^+w", "^w") ; Close tab
+$^+n:: SendCommand_norm("^+n", "^n") ; Open a new tab/file
+$^+d:: SendCommand_norm("^+d", "^d") ; just control + d
+$^+r:: SendCommand_norm("^+r", "^r") ; just control + r
+$^+f:: SendCommand_norm("^+f", "^f") ; just control + f
 $^+e:: 
 	if (is_target() == 6)        ; Google Chrome
-		SendCommand("^+e", "^+e") ; Same ^+e
+		SendCommand_norm("^+e", "^+e") ; Same ^+e
 	else 
-		SendCommand("^+e", "^e") ; just control + e
+		SendCommand_norm("^+e", "^e") ; just control + e
 	return
 
 ;==========================
 ;Extra keys
 ;==========================
-$!a:: SendCommand("!a", "{AppsKey}") ; Right click
+$!a:: SendCommand_norm("!a", "{AppsKey}") ; Right click
 
 $+!d::  ; ;Send date and time
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
