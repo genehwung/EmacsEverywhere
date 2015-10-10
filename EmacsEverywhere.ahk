@@ -96,7 +96,7 @@ loop{
 		if (is_pre_x) {		
 			; the last keystroke has to be something else (diffTs > INTERVAL)
 			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" || !GetKeyState("Ctrl","P")) ){ 
-				Msgbox, %A_Thishotkey% . %A_Priorkey% .GetKeyState("Ctrl","P")
+				;Msgbox, %A_Thishotkey% . %A_Priorkey% .GetKeyState("Ctrl","P")
 				setPrefix_x("", false)
 			}
 		}
@@ -104,8 +104,8 @@ loop{
 		; any key will cancel the ^space, this will however, turn it off when releasing control (shich seems too strict but fine for now)
 		if (is_pre_spc) {
 			; the last keystroke has to be something else (diffTs > INTERVAL)			
-			; other hotkeys are pressed, or just some random keys being pressed (Control is released)
-			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (key_grp <> 1 || !GetKeyState("Ctrl","P")) ){ 
+			; other hotkeys are pressed, or just some random keys being pressed (commenting: control is released)
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (key_grp <> 1 ) ){  ; || !GetKeyState("Ctrl","P")
 				;Msgbox, %A_Thishotkey% . %A_Priorkey%
 				setPrefix_space("", false)
 			}
