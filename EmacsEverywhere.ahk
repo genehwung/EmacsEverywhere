@@ -95,7 +95,7 @@ loop{
 		; any key will cancel the ^x , this will however, turn it off when releasing control (shich seems too strict but fine for now)
 		if (is_pre_x) {		
 			; the last keystroke has to be something else (diffTs > INTERVAL)
-			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" || !GetKeyState("Ctrl","P")) ){ 
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" ) ){  ; || !GetKeyState("Ctrl","P")
 				;Msgbox, %A_Thishotkey% . %A_Priorkey% .GetKeyState("Ctrl","P")
 				setPrefix_x("", false)
 			}
