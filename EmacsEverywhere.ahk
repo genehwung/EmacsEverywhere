@@ -413,4 +413,8 @@ $!a:: SendCommand_norm("!a", "{AppsKey}") ; Right click
 $+!d::  ; ;Send date and time
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
 SendInput %CurrentDateTime%
+; to prevent the alt key get stuck
+while(!GetKeyState("Alt","P")){
+	sleep 50
+}
 return
