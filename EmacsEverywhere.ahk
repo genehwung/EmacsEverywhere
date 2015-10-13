@@ -414,7 +414,19 @@ $+!d::  ; ;Send date and time
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
 SendInput %CurrentDateTime%
 ; to prevent the alt key get stuck
-while(!GetKeyState("Alt","P")){
+cnt := 0
+while GetKeyState("Alt","P") || GetKeyState("Shift","P") {
 	sleep 50
+	cnt := cnt + 1
+	if (cnt > 2) {
+		if GetKeyState("Alt", "P"){
+			send, {ALT UP}
+		}
+		if GetKeyState("LSHIFT", "P"){
+			send, {LSHIFT UP}
+		}
+		;Msgbox, send up
+		return
+	}
 }
 return
