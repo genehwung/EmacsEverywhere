@@ -283,7 +283,8 @@ $^space:: ;Marker begins
 $^g:: ;Reset the marker
 	setPrefix_x("^g", false) ; Disable the Ctrl_x 
 	setPrefix_space("", false)	; Disable the marker	
-	SendCommand("", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
+	SendCommand("", "{Up}{Down}", "{Escape}") ; Clear the selection (sometimes the cursor goes to a different place)
+	;SendCommand("", "{Esc}"); Clear the selection (sometimes the cursor goes to a different place)
 	return
 
 ;==========================
