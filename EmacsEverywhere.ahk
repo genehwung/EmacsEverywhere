@@ -95,7 +95,7 @@ loop{
 		; any key will cancel the ^x , this will however, turn it off when releasing control (shich seems too strict but fine for now)
 		if (is_pre_x) {		
 			; the last keystroke has to be something else (diffTs > INTERVAL)
-			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" || !GetKeyState("Ctrl","P")) ){ 
+			if (A_TimeIdlePhysical < INTERVAL && diffTs > INTERVAL && (A_Thishotkey <> "$^x" ) ){  ;|| !GetKeyState("Ctrl","P")
 				;Msgbox, %A_Thishotkey% . %A_Priorkey% .GetKeyState("Ctrl","P")
 				setPrefix_x("", false)
 			}
@@ -413,4 +413,8 @@ $!a:: SendCommand_norm("!a", "{AppsKey}") ; Right click
 $+!d::  ; ;Send date and time
 FormatTime, CurrentDateTime,, M/d/yyyy h:mm tt  ; It will look like 9/1/2005 3:53 PM
 SendInput %CurrentDateTime%
+return
+
+$+!r::  ; ;Send Gutierrez
+SendCommand_norm("Gutierrez", "Gutierrez")
 return
