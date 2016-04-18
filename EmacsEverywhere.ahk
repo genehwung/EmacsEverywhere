@@ -20,8 +20,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 enabledIcon := "EmacsEverywhere_on.ico"
 disabledIcon := "EmacsEverywhere_off.ico"
-IsInEmacsMode := false
-SetEmacsMode(true)
+IsInEmacsMode := true
 
 is_pre_x := false ; turns to be true when ctrl-x is pressed
 is_pre_spc := false ; turns to be true when ctrl-space is pressed
@@ -35,6 +34,9 @@ timeStamp_GL := 0 ; Used for calculate time between events
 ;==========================
 ; Check application, 0 means disable the key binding all together
 is_target() {
+  IfWinActive,ahk_class PuTTY ; PuTTY
+    ;TrayTip, Emacs Everywhere, PuTTY mode, 10, 1
+    Return 0
   IfWinActive,ahk_class Emacs ; NTEmacs 
     Return 0
   IfWinActive,ahk_class mintty ; Cygwin
@@ -116,18 +118,17 @@ loop{
 SetEmacsMode(toActive) {
   local iconFile := toActive ? enabledIcon : disabledIcon
   local state := toActive ? "ON" : "OFF"
-
+  
   if (IsInEmacsMode != toActive) {
 	  IsInEmacsMode := toActive
-	  ; TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
-	  Menu, Tray, Icon, %iconFile%,
-	  ; Menu, Tray, Tip, Emacs Everywhere`nEmacs mode is %state%  
+	  ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
+	  Menu, Tray, Icon, %iconFile%,	  
 
 	  Send {Shift Up}
   }
 }
 
-; Disable the non-emacs mode since I can just disable hotkey...
+; Disable emacs mode whenever at right positions
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
 	global timeStamp_GL := A_TickCount ; record when the key is pressed
 	
@@ -136,13 +137,14 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
 		setPrefix_x("", false)
 	}
 	
-  ;if (is_target() == 0) ; 
-	;SetEmacsMode(false)
-   ;else	
-	;SetEmacsMode(true)   
+  global IsInEmacsMode	
+  if (is_target() == 0) ; 
+	SetEmacsMode(false)
+   else	
+	SetEmacsMode(true)   
 	
   ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
-  global IsInEmacsMode
+
 	
   if (IsInEmacsMode && translationToWindowsKeystrokes <>"") {
     Send, %translationToWindowsKeystrokes%
