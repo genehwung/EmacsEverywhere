@@ -131,14 +131,14 @@ SetEmacsMode(toActive) {
 ; Disable emacs mode whenever at right positions
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
 	global timeStamp_GL := A_TickCount ; record when the key is pressed
-	
+        global IsInEmacsMode	
 	; if prefix x, disable it once anything has been clicked
-	if (is_pre_x) {
+	if (is_pre_x & IsInEmacsMode) {
 		setPrefix_x("", false)
 	}
 	
-  global IsInEmacsMode	
-  if (is_target() == 0) ; 
+
+  if (is_target() == 0) 
 	SetEmacsMode(false)
    else	
 	SetEmacsMode(true)   
