@@ -131,9 +131,8 @@ SetEmacsMode(toActive) {
 ; Disable emacs mode whenever at right positions
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
 	global timeStamp_GL := A_TickCount ; record when the key is pressed
-        global IsInEmacsMode	
 	; if prefix x, disable it once anything has been clicked
-	if (is_pre_x & IsInEmacsMode) {
+	if (is_pre_x  & is_target() <> 0) {
 		setPrefix_x("", false)
 	}
 	
@@ -146,7 +145,7 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
   ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
 
 	
-  if (IsInEmacsMode && translationToWindowsKeystrokes <>"") {
+  if (is_target() <> 0 && translationToWindowsKeystrokes <>"") {
     Send, %translationToWindowsKeystrokes%
 	sleep, 40
     if (secondWindowsKeystroke<>"") {
@@ -178,7 +177,7 @@ SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	global is_pre_spc
 	global key_grp := 1
 	
-	if (is_pre_spc) {
+	if (is_pre_spc & is_target() <> 0) {
 		
 		SendCommand(emacsKey, "+" . translationToWindowsKeystrokes) ; Concatenate string
 	}
@@ -194,13 +193,12 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 ;	global is_pre_spc
 	local result
   
-	if (is_pre_spc) {
+	if (is_pre_spc & is_target() <> 0) {
 		result = +%translationToWindowsKeystrokes% ; Concatenate string
 	}
 	else {
 		result = %translationToWindowsKeystrokes%
 	}	
-	
 	return result
 }
 
@@ -208,7 +206,7 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 	
 	global is_pre_x	  
 	global key_grp := 2
-	if (is_pre_x) {
+	if (is_pre_x  & is_target() <> 0) {
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
 		;setPrefix_x(emacsKey,false)
 	}
