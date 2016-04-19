@@ -218,19 +218,29 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 }
 
 setPrefix_x(emacsKey,toActive) {
-	local iconFile := toActive ? disabledIcon : enabledIcon
-	is_pre_x := toActive
-	Menu, Tray, Icon, %iconFile%,
-	timeStamp_GL := A_TickCount
-	return
+	if (is_target() <> 0) {
+		;local iconFile := toActive ? disabledIcon : enabledIcon
+		is_pre_x := toActive
+		;Menu, Tray, Icon, %iconFile%,
+		timeStamp_GL := A_TickCount
+		return
+	}
+	else {
+		Send, %emacsKey% ;passthrough original keystroke 
+	}
 }
   
 setPrefix_space(emacsKey,toActive) {
-	local iconFile := toActive ? disabledIcon : enabledIcon
-	is_pre_spc := toActive
-	Menu, Tray, Icon, %iconFile%,
-	timeStamp_GL := A_TickCount
-	return
+	if (is_target() <> 0) {
+		;local iconFile := toActive ? disabledIcon : enabledIcon
+		is_pre_spc := toActive
+		;Menu, Tray, Icon, %iconFile%,
+		timeStamp_GL := A_TickCount
+		return
+	}
+	else {
+		Send, ^{space} ;passthrough original keystroke 
+	}
 }
   
 ;==========================
@@ -270,7 +280,7 @@ $^w:: ;Save as or cut (because ^f is forward now)
 	setPrefix_space("", false)  ; Disable the marker
 	return
 
-$^space:: ;Marker begins
+$^space:: ;Marker begins	
 	global is_pre_spc
 	if !is_pre_spc ; Just enable marker when it is not enabled
 		setPrefix_space("^space", true) 
