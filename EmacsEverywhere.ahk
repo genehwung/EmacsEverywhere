@@ -240,7 +240,7 @@ setPrefix_space(emacsKey,toActive) {
 		return
 	}
 	else {
-		Send, ^{space} ;passthrough original keystroke
+		Send, %emacsKey% ;passthrough original keystroke
 	}
 }
   
@@ -277,17 +277,17 @@ $^w:: ;Save as or cut (because ^f is forward now)
 $^space:: ;Marker begins	
 	global is_pre_spc
 	if !is_pre_spc ; Just enable marker when it is not enabled
-		setPrefix_space("^space", true) 
+		setPrefix_space("^{space}", true) 
 	else {
-		SendCommand("", "{Up}{Down}") ; Cancel the selection, and then go to the right 
+		SendCommand("^{space}", "{Up}{Down}") ; Cancel the selection, and then go to the right 
 		setPrefix_space("", true) 
 	}
 	return
 
 $^g:: ;Reset the marker
-	setPrefix_x("^g", false) ; Disable the Ctrl_x 
+	setPrefix_x("", false) ; Disable the Ctrl_x 
 	setPrefix_space("", false)	; Disable the marker	
-	SendCommand("", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
+	SendCommand("^g", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
 	return
 
 ;==========================
