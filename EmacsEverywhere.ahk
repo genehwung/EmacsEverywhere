@@ -57,6 +57,7 @@ is_target() {
    IfWinActive,ahk_class XEmacs ; XEmacs on Cygwin
      Return 1
   IfWinActive,ahk_class OpusApp ; Word
+	;TrayTip, Emacs Everywhere, Word mode, 10, 1
     Return 2
   IfWinActive,ahk_class ENMainFrame ; Evernote
     Return 3
@@ -177,7 +178,7 @@ SendCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 	global is_pre_spc
 	global key_grp := 1
 	
-	if (is_pre_spc & is_target() <> 0) {
+	if (is_pre_spc && is_target() <> 0) {
 		
 		SendCommand(emacsKey, "+" . translationToWindowsKeystrokes) ; Concatenate string
 	}
@@ -193,7 +194,7 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 ;	global is_pre_spc
 	local result
   
-	if (is_pre_spc & is_target() <> 0) {
+	if (is_pre_spc && is_target() <> 0) {
 		result = +%translationToWindowsKeystrokes% ; Concatenate string
 	}
 	else {
@@ -239,7 +240,7 @@ setPrefix_space(emacsKey,toActive) {
 		return
 	}
 	else {
-		Send, ^{space} ;passthrough original keystroke 
+		Send, ^{space} ;passthrough original keystroke
 	}
 }
   
