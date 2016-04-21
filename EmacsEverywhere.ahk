@@ -133,7 +133,7 @@ SetEmacsMode(toActive) {
 SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="") {
 	global timeStamp_GL := A_TickCount ; record when the key is pressed
 	; if prefix x, disable it once anything has been clicked
-	if (is_pre_x  & is_target() <> 0) {
+	if (is_pre_x  && is_target() <> 0) {
 		setPrefix_x("", false)
 	}
 	
@@ -202,10 +202,9 @@ GetCommand_spc(emacsKey, translationToWindowsKeystrokes) {
 SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes) {
 	
 	global is_pre_x	  
-	global key_grp := 2
-	if (is_pre_x  & is_target() <> 0) {
+	global key_grp := 2	
+	if (is_pre_x  && is_target() <> 0) {				
 		SendCommand(emacsKey, translationToWindowsKeystrokes)
-		;setPrefix_x(emacsKey,false)
 	}
 	else {
 		SendCommand(emacsKey, alternativeKeystrokes)
