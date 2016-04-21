@@ -137,14 +137,10 @@ SendCommand(emacsKey, translationToWindowsKeystrokes, secondWindowsKeystroke="")
 		setPrefix_x("", false)
 	}
 	
-
   if (is_target() == 0) 
 	SetEmacsMode(false)
    else	
 	SetEmacsMode(true)   
-	
-  ;TrayTip, Emacs Everywhere, Emacs mode is %translationToWindowsKeystrokes%, 10, 1
-
 	
   if (is_target() <> 0 && translationToWindowsKeystrokes <>"") {
     Send, %translationToWindowsKeystrokes%
@@ -219,10 +215,12 @@ SendCommand_PreX(emacsKey, translationToWindowsKeystrokes, alternativeKeystrokes
 }
 
 setPrefix_x(emacsKey,toActive) {
+	global disabledIcon
+	global enabledIcon
 	if (is_target() <> 0) {
-		;local iconFile := toActive ? disabledIcon : enabledIcon
+		iconFile := toActive ? disabledIcon : enabledIcon
 		is_pre_x := toActive
-		;Menu, Tray, Icon, %iconFile%,
+		Menu, Tray, Icon, %iconFile%,
 		timeStamp_GL := A_TickCount
 		return
 	}
@@ -232,10 +230,12 @@ setPrefix_x(emacsKey,toActive) {
 }
   
 setPrefix_space(emacsKey,toActive) {
+	global disabledIcon
+	global enabledIcon
 	if (is_target() <> 0) {
-		;local iconFile := toActive ? disabledIcon : enabledIcon
+		iconFile := toActive ? disabledIcon : enabledIcon
 		is_pre_spc := toActive
-		;Menu, Tray, Icon, %iconFile%,
+		Menu, Tray, Icon, %iconFile%,
 		timeStamp_GL := A_TickCount
 		return
 	}
@@ -244,13 +244,6 @@ setPrefix_space(emacsKey,toActive) {
 	}
 }
   
-;==========================
-;Emacs mode toggle
-;==========================
-;!`::
-  ;SetEmacsMode(!IsInEmacsMode)
-;return
-
 ;==============================
 ;Things starting with ^X or Space
 ;==============================
