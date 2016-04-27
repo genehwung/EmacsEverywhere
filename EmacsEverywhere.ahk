@@ -117,13 +117,13 @@ loop{
 }
 
 SetEmacsMode(toActive) {
-  local iconFile := toActive ? enabledIcon : disabledIcon
-  local state := toActive ? "ON" : "OFF"
+  ;local iconFile := toActive ? enabledIcon : disabledIcon
+  ;local state := toActive ? "ON" : "OFF"
   
   if (IsInEmacsMode != toActive) {
 	  IsInEmacsMode := toActive
 	  ;TrayTip, Emacs Everywhere, Emacs mode is %state%, 10, 1
-	  Menu, Tray, Icon, %iconFile%,	  
+	  ;Menu, Tray, Icon, %iconFile%,	  
 
 	  Send {Shift Up}
   }
