@@ -37,6 +37,8 @@ is_target() {
   IfWinActive,ahk_class PuTTY ; PuTTY
     ;TrayTip, Emacs Everywhere, PuTTY mode, 10, 1
     Return 0
+  ;IfWinActive, ahk_exe pycharm64.exe ; pycharm
+    ;Return 0
   IfWinActive,ahk_class Emacs ; NTEmacs 
     Return 0
   IfWinActive,ahk_class mintty ; Cygwin
