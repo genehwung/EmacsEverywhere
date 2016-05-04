@@ -353,6 +353,11 @@ $^_::SendCommand_norm("^_","^z") ;Undo
 
 $^+::SendCommand_norm("^_","^y") ;Redo, this is a silly helper as Emacs behaves very different for Redo
 
+$^q::
+	SendCommand_norm("","^z")
+	SendCommand_norm("^q","^y")
+	return
+	
 ;==========================
 ;Copy, cut, paste, delete
 ;==========================
