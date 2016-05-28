@@ -283,12 +283,17 @@ $^space:: ;Marker begins
 	}
 	return
 
+$!space::
+		SendCommand("!{space}", "{enter}")
+		
+	
 $^g:: ;Reset the marker
 	setPrefix_x("", false) ; Disable the Ctrl_x 
 	setPrefix_space("", false)	; Disable the marker	
 	SendCommand("^g", "{Up}{Down}") ; Clear the selection (sometimes the cursor goes to a different place)
 	return
 
+	
 ;==========================
 ;Search "incremental in c_x"
 ;==========================
