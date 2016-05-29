@@ -396,6 +396,15 @@ $^y::SendCommand_norm("^y","^v") ;paste
 ;==========================
 
 ;==========================
+;Use v as shift
+;==========================
+v::SendCommand_norm("v", "v")
+v & 9::SendCommand_norm("v", "(")
+v & 0::SendCommand_norm("v", ")")
+v & [::SendCommand_norm("v", "{{}}")
+v & ]::SendCommand_norm("v", "{}}")
+
+;==========================
 ;Conflicting shortcuts
 ;==========================
 $^+p:: SendCommand_norm("^+p", "^p") ; Print
