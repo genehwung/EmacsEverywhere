@@ -386,7 +386,7 @@ $^k:: ;Take the whole line and cut it
 
 $!w:: ;copy region, and reset the marker
 	SendCommand_norm("!w","^c") 
-	setPrefix_space("", false) 
+	setPrefix_space("", false)
 	return
 
 $^y::SendCommand_norm("^y","^v") ;paste
@@ -399,10 +399,33 @@ $^y::SendCommand_norm("^y","^v") ;paste
 ;Use v as shift
 ;==========================
 v::SendCommand_norm("v", "v")
-v & 9::SendCommand_norm("v", "(")
-v & 0::SendCommand_norm("v", ")")
-v & [::SendCommand_norm("v", "{{}}")
-v & ]::SendCommand_norm("v", "{}}")
+v & 9::SendCommand_norm("(", "(")
+v & 0::SendCommand_norm(")", ")")
+v & [::SendCommand_norm("{{}}", "{{}}")
+v & ]::SendCommand_norm("{}}", "{}}")
+v & =::SendCommand_norm("{+}", "{+}")
+v & 6::SendCommand_norm("{^}", "{^}")
+v & 7::SendCommand_norm("&", "&")
+v & 8::SendCommand_norm("*", "*")
+
+v & y::SendCommand_norm("Y", "Y")
+v & u::SendCommand_norm("U", "U")
+v & i::SendCommand_norm("I", "I")
+v & o::SendCommand_norm("O", "O")
+v & p::SendCommand_norm("P", "P")
+v & h::SendCommand_norm("H", "H")
+v & j::SendCommand_norm("J", "J")
+v & k::SendCommand_norm("K", "K")
+v & l::SendCommand_norm("L", "L")
+v & m::SendCommand_norm("M", "M")
+v & n::SendCommand_norm("N", "N")
+v & `;::SendCommand_norm("{:}", "{:}")
+v & '::SendCommand_norm("""", """")
+v & ,::SendCommand_norm("{<}", "{<}")
+v & .::SendCommand_norm("{>}", "{>}")
+v & /::SendCommand_norm("{?}", "{?}")
+v & -::SendCommand_norm("{_}", "{_}")
+v & \::SendCommand_norm("{|}", "{|}")
 
 ;==========================
 ;Conflicting shortcuts
