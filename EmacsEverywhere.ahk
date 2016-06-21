@@ -244,7 +244,7 @@ setPrefix_space(emacsKey,toActive) {
 		Send, %emacsKey% ;passthrough original keystroke
 	}
 }
-  
+
 ;==============================
 ;Things starting with ^X or Space
 ;==============================
