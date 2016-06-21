@@ -401,6 +401,7 @@ $^y::SendCommand_norm("^y","^v") ;paste
 ;Use x as shift
 ;==========================
 x::Sendcommand_norm("x", "x")
+$!x::Sendcommand_norm("!x", "!x")
 
 x & 9::SendCommand_norm("(", "(")
 x & 0::SendCommand_norm(")", ")")
@@ -434,7 +435,7 @@ x & e::SendCommand_norm("E", "E")
 x & r::SendCommand_norm("R", "R")
 x & t::SendCommand_norm("T", "T")
 x & z::SendCommand_norm("Z", "Z")
-x & x::SendCommand_norm("X", "X")
+x & v::SendCommand_norm("V", "V")
 x & c::SendCommand_norm("C", "C")
 x & b::SendCommand_norm("B", "B")
 
@@ -444,24 +445,6 @@ x & 2::SendCommand_norm("@", "@")
 x & 3::SendCommand_norm("{#}", "{#}")
 x & 4::SendCommand_norm("$", "$")
 x & 5::SendCommand_norm("%", "%")
-
-; prevent the thumb to click on the wrong keys.
-z::Sendcommand_norm("z", "z")
-z & `::SendCommand_norm("~", "~")
-z & 1::SendCommand_norm("{!}", "{!}")
-z & 2::SendCommand_norm("@", "@")
-z & 3::SendCommand_norm("{#}", "{#}")
-z & 4::SendCommand_norm("$", "$")
-z & 5::SendCommand_norm("%", "%")
-
-
-x & `;::SendCommand_norm("{:}", "{:}")
-x & '::SendCommand_norm("""", """")
-x & ,::SendCommand_norm("{<}", "{<}")
-x & .::SendCommand_norm("{>}", "{>}")
-x & /::SendCommand_norm("{?}", "{?}")
-x & -::SendCommand_norm("{_}", "{_}")
-x & \::SendCommand_norm("{|}", "{|}")
 
 ;==========================
 ;Conflicting shortcuts
