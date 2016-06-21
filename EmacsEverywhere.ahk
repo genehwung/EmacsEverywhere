@@ -446,6 +446,14 @@ x & 3::SendCommand_norm("{#}", "{#}")
 x & 4::SendCommand_norm("$", "$")
 x & 5::SendCommand_norm("%", "%")
 
+x & `;::SendCommand_norm("{:}", "{:}")
+x & '::SendCommand_norm("""", """")
+x & ,::SendCommand_norm("{<}", "{<}")
+x & .::SendCommand_norm("{>}", "{>}")
+x & /::SendCommand_norm("{?}", "{?}")
+x & -::SendCommand_norm("{_}", "{_}")
+x & \::SendCommand_norm("{|}", "{|}")
+
 ;==========================
 ;Conflicting shortcuts
 ;==========================
