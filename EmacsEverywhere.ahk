@@ -250,7 +250,7 @@ setPrefix_space(emacsKey,toActive) {
 ;==============================
 $^x::setPrefix_x("^x", true) ;Ctrl X is just typed
 
-$h::SendCommand_PreX("h", "^a", "h") ;Select all
+$^h::SendCommand_PreX("^h", "^a", "^h") ;Select all with control h to avoid h/H not being distinguished in autohokey
 
 $^f::SendCommand_PreX("^f", "^o", GetCommand_spc("^f","{Right}"))  ; Open a file or move right
 	
