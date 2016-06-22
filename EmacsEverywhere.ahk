@@ -400,8 +400,15 @@ $^y::SendCommand_norm("^y","^v") ;paste
 ;==========================
 ;Use x as shift
 ;==========================
-x::Sendcommand_norm("x", "x")
+; respect shfit+x and capslock with x
+$x::
+	if(GetKeyState("CapsLock", "T"))
+		SendCommand_norm("X","X")
+	else
+		SendCommand_norm("x","x")
+	return
 $!x::Sendcommand_norm("!x", "!x")
+$+x::Sendcommand_norm("+x", "+x")
 
 x & 9::SendCommand_norm("(", "(")
 x & 0::SendCommand_norm(")", ")")
@@ -453,6 +460,7 @@ x & .::SendCommand_norm("{>}", "{>}")
 x & /::SendCommand_norm("{?}", "{?}")
 x & -::SendCommand_norm("{_}", "{_}")
 x & \::SendCommand_norm("{|}", "{|}")
+
 
 ;==========================
 ;Conflicting shortcuts
