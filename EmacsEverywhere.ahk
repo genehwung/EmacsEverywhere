@@ -394,69 +394,37 @@ $^y::SendCommand_norm("^y","^v") ;paste
 ;==========================
 
 ;==========================
-;Use x as shift
+;Use left_alt as shift for the right hand keys
 ;==========================
-; respect shfit+x and capslock with x
-$x::
-	if(GetKeyState("CapsLock", "T"))
-		SendCommand_norm("X","X")
-	else
-		SendCommand_norm("x","x")
-	return
-$!x::Sendcommand_norm("!x", "!x")
-$+x::Sendcommand_norm("+x", "+x")
 
-x & 9::SendCommand_norm("(", "(")
-x & 0::SendCommand_norm(")", ")")
-x & [::SendCommand_norm("{{}}", "{{}}")
-x & ]::SendCommand_norm("{}}", "{}}")
-x & =::SendCommand_norm("{+}", "{+}")
-x & 6::SendCommand_norm("{^}", "{^}")
-x & 7::SendCommand_norm("&", "&")
-x & 8::SendCommand_norm("*", "*")
+$!9::SendCommand_norm("(", "(")
+$!0::SendCommand_norm(")", ")")
+$![::SendCommand_norm("{{}}", "{{}}")
+$!]::SendCommand_norm("{}}", "{}}")
+$!=::SendCommand_norm("{+}", "{+}")
+$!6::SendCommand_norm("{^}", "{^}")
+$!7::SendCommand_norm("&", "&")
+$!8::SendCommand_norm("*", "*")
 
-x & y::SendCommand_norm("Y", "Y")
-x & u::SendCommand_norm("U", "U")
-x & i::SendCommand_norm("I", "I")
-x & o::SendCommand_norm("O", "O")
-x & p::SendCommand_norm("P", "P")
-x & h::SendCommand_norm("H", "H")
-x & j::SendCommand_norm("J", "J")
-x & k::SendCommand_norm("K", "K")
-x & l::SendCommand_norm("L", "L")
-x & m::SendCommand_norm("M", "M")
-x & n::SendCommand_norm("N", "N")
+$!y::SendCommand_norm("Y", "Y")
+$!u::SendCommand_norm("U", "U")
+$!i::SendCommand_norm("I", "I")
+$!o::SendCommand_norm("O", "O")
+$!p::SendCommand_norm("P", "P")
+$!h::SendCommand_norm("H", "H")
+$!j::SendCommand_norm("J", "J")
+$!k::SendCommand_norm("K", "K")
+$!l::SendCommand_norm("L", "L")
+$!m::SendCommand_norm("M", "M")
+$!n::SendCommand_norm("N", "N")
 
-x & a::SendCommand_norm("A", "A")
-x & s::SendCommand_norm("S", "S")
-x & d::SendCommand_norm("D", "D")
-x & f::SendCommand_norm("F", "F")
-x & g::SendCommand_norm("G", "G")
-x & q::SendCommand_norm("Q", "Q")
-x & w::SendCommand_norm("W", "W")
-x & e::SendCommand_norm("E", "E")
-x & r::SendCommand_norm("R", "R")
-x & t::SendCommand_norm("T", "T")
-x & z::SendCommand_norm("Z", "Z")
-x & v::SendCommand_norm("V", "V")
-x & c::SendCommand_norm("C", "C")
-x & b::SendCommand_norm("B", "B")
-
-x & `::SendCommand_norm("~", "~")
-x & 1::SendCommand_norm("{!}", "{!}")
-x & 2::SendCommand_norm("@", "@")
-x & 3::SendCommand_norm("{#}", "{#}")
-x & 4::SendCommand_norm("$", "$")
-x & 5::SendCommand_norm("%", "%")
-
-x & `;::SendCommand_norm("{:}", "{:}")
-x & '::SendCommand_norm("""", """")
-x & ,::SendCommand_norm("{<}", "{<}")
-x & .::SendCommand_norm("{>}", "{>}")
-x & /::SendCommand_norm("{?}", "{?}")
-x & -::SendCommand_norm("{_}", "{_}")
-x & \::SendCommand_norm("{|}", "{|}")
-
+$!'::SendCommand_norm("""", """")
+$!,::SendCommand_norm("{<}", "{<}")
+$!.::SendCommand_norm("{>}", "{>}")
+$!/::SendCommand_norm("{?}", "{?}")
+$!-::SendCommand_norm("{_}", "{_}")
+$!\::SendCommand_norm("{|}", "{|}")
+$!;::SendCommand_norm("{:}", "{:}")
 
 ;==========================
 ;Conflicting shortcuts
