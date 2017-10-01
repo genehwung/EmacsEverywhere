@@ -364,9 +364,7 @@ $^d::SendCommand_norm("^d","{Delete}") ;Delete
 
 $!d::SendCommand_norm("!d","^+{Right}","{Delete}") ;Delete a word
 
-$!Backspace::SendCommand_norm("!{Backspace}","^+{left}","{Delete}") ;Delete a word from the right side
-
-$^Backspace::SendCommand_norm("!{Backspace}","^{Backspace}") ;Delete a word from the right side
+$!Backspace::SendCommand_norm("!{Backspace}","^{Backspace}") ;Delete a word from the right side
 
 $!Delete::SendCommand_norm("!{Del}","^+{Left}","{Del}") ;Delete from the right side
 
